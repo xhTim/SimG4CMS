@@ -115,18 +115,13 @@ void TimingSD::getStepInfo(const G4Step* aStep) {
   const G4Track* newTrack = aStep->GetTrack();
   // exclude ECAL gflash spots inside MTD detectors,
   // which not possible correctly handle
-  
-  // Set step points before hit classification to ensure proper data access
-  preStepPoint = aStep->GetPreStepPoint();
-  postStepPoint = aStep->GetPostStepPoint();
-  
-  // Set hit classification before getting track ID to ensure correct classification
-  setHitClassID(aStep);
-  
   primaryID = getTrackID(newTrack);
   if (primaryID < -1) {
     return;
   }
+
+  preStepPoint = aStep->GetPreStepPoint();
+  postStepPoint = aStep->GetPostStepPoint();
   hitPointExit = postStepPoint->GetPosition();
   setToLocal(preStepPoint, hitPointExit, hitPointLocalExit);
 
@@ -192,6 +187,8 @@ void TimingSD::getStepInfo(const G4Step* aStep) {
   tSlice = timeFactor * preStepPoint->GetGlobalTime() * invns;
   tSliceID = (int)tSlice;
 
+  setHitClassID(aStep);
+  primaryID = getTrackID(newTrack);
   unitID = setDetUnitId(aStep);
 }
 
